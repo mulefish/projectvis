@@ -3,6 +3,8 @@ import sys
 from letter import IDService
 from find_imports import ReadFileForImports
 
+possible = {}
+
 def clean_the_path(path_to_file):
     # get ./data1/src/components/Profile.js
     # return data1/src/components/Profile
@@ -33,8 +35,23 @@ def findAbsPath(path_to_file, relative_path):
 
 
 
+def step1_populate_possible_refs(dirs):
+    # Populate a hash of possible refs. If there is a ref made and 
+    # it is not in the 'possible' dict then that is a ref to some 3rd party thing, 
+    # such as 'react' or 'font-awesome' or something
+    for branch in dirs:
+        for root, dirs, files in os.walk(branch):
+            for file in files:
+                if file.endswith(".js") or file.endswith(".jsx"):   
+                    file = clean_the_path(file)     
+                    
+                    if file in possible:
+                        possible[file] += 1
+                    else:
+                        possible[file] = 1
+
 rffi = ReadFileForImports()
-def step1_read_dirs(dirs):
+def step2_read_dirs(dirs):
     for branch in dirs:
         for root, dirs, files in os.walk(branch):
             path = root.split(os.sep)
@@ -49,8 +66,12 @@ def step1_read_dirs(dirs):
                     cleaned = clean_the_path(path_to_file)
                     print(">>>{}".format(cleaned))
                     for importedRef in imports:
-                        ref = findAbsPath(root, importedRef)
-                        print(".....>{}".format(ref))
+                        path_to_ref = findAbsPath(root, importedRef)
+                        ref = path_to_ref.split(os.sep)[-1]
+                        if ref in possible:
+                            print("\tYAY.....>{} and {}".format(path_to_ref, ref))
+                        #else:
+                        #    print("\tBOO.....>{} and {}".format(path_to_ref, ref))
                     
 
 
@@ -58,4 +79,5 @@ if __name__ == "__main__":
     starting_points = [] 
     starting_points.append("./data1/")
     starting_points.append("./data2/")
-    step1_read_dirs(starting_points)
+    step1_populate_possible_refs(starting_points)
+    step2_read_dirs(starting_points)
