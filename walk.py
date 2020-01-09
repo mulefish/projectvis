@@ -3,6 +3,9 @@ import sys
 from letter import IDService
 from find_imports import ReadFileForImports
 
+
+possible = {} 
+cleaned = {} 
 class FileNode:
     """ This will hold a file name. It might or might also not appear in different _trees_. """
 
@@ -33,8 +36,10 @@ class FileNode:
                 # print("\t\t{} :: {}".format(key, self.imports[key]))
                 imported = self.imports[key]
                 for item in imported:
-                    print( "\t\t{} : {}".format(key, item))
-
+                    if item in cleaned:
+                        print( "YAY\t\t{} : {}".format(key, item))
+                    else:
+                        print( "BOO\t\t{} : {}".format(key, item))
 
 
 def buildShortName(path, filename, delimiter):
@@ -71,7 +76,6 @@ def buildFullName(path, filename):
 
 
 
-possible = {} 
 def step1_read_dirs(dirs):
     id = IDService()
     for branch in dirs:
@@ -102,12 +106,23 @@ def step2_find_imports():
             path = node.paths[full_path]
             imports = rffi.readFileForImports(path)
             node.addImports(full_path, imports)
-        node.display()
+        # node.display()
 step2_find_imports()
+
+def cleanPossible():
+    for key in possible:
+        key = key.replace(".jsx", "")
+        key = key.replace(".js", "")
+        cleaned[key]="Oh - I wish I knew how a Set() object worked in python."
+
+cleanPossible()
+
 
 def show(): 
     for key in possible:
         node = possible[key]
         node.display()
-# show()
+show()
 
+for c in cleaned:
+    print(c )
