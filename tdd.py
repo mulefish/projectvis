@@ -85,6 +85,25 @@ def letter_test():
     else:
         print("FAIL actual |{}| for letter_test".format(actual))
 
+def find_imported_ref_and_discard_the_path_test1():
+    given = "a/b/c/d/something"
+    expected = "something"
+    actual = given.split(os.sep)[-1]
+    if actual == expected:
+        print("PASS actual |{}| for find_imported_ref_and_discard_the_path_test1".format(actual))
+    else:
+        print("FAIL actual |{}| for find_imported_ref_and_discard_the_path_test1".format(actual))
+
+def find_imported_ref_and_discard_the_path_test2():
+    given = "something"
+    expected = "something"
+    actual = given.split(os.sep)[-1]
+    if actual == expected:
+        print("PASS actual |{}| for find_imported_ref_and_discard_the_path_test2".format(actual))
+    else:
+        print("FAIL actual |{}| for find_imported_ref_and_discard_the_path_test2".format(actual))
+
+
 print("****")
 findImportPath_noChange()
 findImportPath_up2dirs()
@@ -94,4 +113,6 @@ clean_the_path_doSomething()
 clean_the_path_doNothing()
 clean_the_path_of_jsx_extension()
 letter_test()
+find_imported_ref_and_discard_the_path_test1()
+find_imported_ref_and_discard_the_path_test2()
 print("****")
