@@ -1,4 +1,5 @@
 from walk import *
+from letter import IDService
 
 def findImportPath_noChange():
     path_to_file = "a/b/c/d"
@@ -72,6 +73,17 @@ def clean_the_path_of_jsx_extension():
     else:
         print("FAIL actual |{}| for clean_the_path_of_jsx_extension".format(actual))
 
+def letter_test():
+    id = IDService()
+    letter1 = id.label_gen()
+    letter2 = id.label_gen()
+    letter3 = id.label_gen()
+    expected = "a b c"
+    actual = "{} {} {}".format(letter1, letter2, letter3)
+    if actual == expected:
+        print("PASS actual |{}| for letter_test".format(actual))
+    else:
+        print("FAIL actual |{}| for letter_test".format(actual))
 
 print("****")
 findImportPath_noChange()
@@ -81,4 +93,5 @@ findImportPath_up1dir_withLeadingDot()
 clean_the_path_doSomething()
 clean_the_path_doNothing()
 clean_the_path_of_jsx_extension()
+letter_test()
 print("****")
