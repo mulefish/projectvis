@@ -2,64 +2,59 @@ import os
 import sys
 from letter import IDService
 
-class FileDetails:
+class FileNode:
+    """ This will hold a file name. It might or might not appear in different _trees_. """
 
-    def __init__(self, letter, path, file_name, root):
+    def __init__(self, full_path, letter, filename):
+        self.paths = []
+        self.paths.append(full_path)        
         self.letter = letter
-        self.path = path
-        self.file_name = file_name
-        self.root = root 
+        self.filename = filename
+
+    def addAnotherFullPath(self, full_path):
+        self.paths.append(full_path)
 
     def display(self):
-        print("ID {} PATH {} NAME {} ROOT {} ".format(self.letter, self.path, self.file_name, self.root ))
+        n = len(self.paths)
+        print("{} {} {}".format(n, self.letter, self.filename))
+        for item in self.paths:
+            print("\t{}".format( item ))
 
 
 walk_dirs = []
-walk_dirs.append("data") # sys.argv[1]
+walk_dirs.append("data1") # sys.argv[1] # Compare this 
+walk_dirs.append("data2") # sys.argv[1] # to this
 possible = {}
-def read_dirs(ary):
-
+def step1_read_dirs(ary):
     id = IDService()
-    for walk_dir in ary:
-        for root, subdirs, files in os.walk(walk_dir):
-            #print('--\nroot = ' + root)
 
+    for walk_dir in ary:
+
+        ignore = {} 
+
+        for root, subdirs, files in os.walk(walk_dir):
+            #print("{}    {}".format( walk_dir, root ))
             for subdir in subdirs:
-                #print('\t- subdirectory ' + subdir)
                 k = 0 
                 for filename in files:
                     if filename.endswith(".jsx") or filename.endswith(".js"):
                         full_path = os.path.join(root, filename)
-                        k += 1
-                        # print('\t! {} : file {} (full path: {})'.format(k, filename, full_path))
-                        if full_path not in possible:
-                            letter = id.label_gen()
-                            fd = FileDetails(letter, full_path, filename, root)
-                            possible[full_path] = fd
+                        if full_path not in ignore:
+                            # The same file might be 'seen' many times. Only want to see it once.
+                            ignore[full_path] = 'I wonder how to make a Set() in python :) ' 
+                        else:                                                
+                            short_path = full_path
+                            short_path = short_path.replace(walk_dir + "/",  "|")
+                            # print("\t{}".format(short_path))
+                            k += 1
+                            if short_path in possible:
+                                # Seen this file before! But in a different tree
+                                possible[short_path].addAnotherFullPath(full_path)
+                            else:
+                                letter = id.label_gen()
+                                fn = FileNode(full_path, letter, filename)
+                                possible[short_path] = fn
 
-
-read_dirs(walk_dirs)
-
+step1_read_dirs(walk_dirs)
 for key in possible:
-    fd = possible[key]
-    fd.display()
-
-# p = "data/react-redux-realworld-example-app-master/src/components/ListPagination.js"
-
-# def readFileForImports(path):
-#     with open(path) as fp:
-#         line = fp.readline()
-#         cnt = 1
-#         while line:
-#             if "import" in line and "from" in line:
-#                 print("Line {}: {}".format(cnt, line.strip()))
-
-#             line = fp.readline()
-                
-#             cnt += 1
-
-
-# readFileForImports(p)
-
-
-
+    possible[key].display()
