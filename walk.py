@@ -3,23 +3,25 @@ import sys
 from letter import IDService
 from find_imports import ReadFileForImports
 
-
-
-
 class FileNode:
     """ This will hold a file name. It might or might also not appear in different _trees_. """
 
-    def __init__(self, short_name, file, full_name, letter):
+    def __init__(self, short_name, file, full_name, letter, branch):
         self.paths = []
         self.short_name = short_name
         self.file = file
         self.letter = letter 
         #self.paths.append(short_name)        
-        self.paths.append(full_name)        
+        self.paths.append(full_name)   
+        self.branches = []  
+        self.branches.append(branch)  
         
-    def addNode(self, short_name, full_name):
+
+
+    def addNode(self, short_name, full_name, branch):
         #self.paths.append(short_name)
         self.paths.append(full_name)
+        self.branches.append(branch)
 
     def display(self):
         for full_name in self.paths:
@@ -63,18 +65,18 @@ def buildFullName(path, filename):
 possible = {} 
 def step1_read_dirs(dirs):
     id = IDService()
-    for dir in dirs:
-        for root, dirs, files in os.walk(dir):
+    for branch in dirs:
+        for root, dirs, files in os.walk(branch):
             path = root.split(os.sep)
             for file in files:
                 if file.endswith(".js") or file.endswith(".jsx"):        
                     short_name = buildShortName(path, file, "src")
                     full_name = buildFullName(path, file)
                     if short_name in possible:
-                        possible[short_name].addNode(short_name, full_name)
+                        possible[short_name].addNode(short_name, full_name, branch)
                     else:
                         letter = id.label_gen()
-                        node = FileNode(short_name, file, full_name, letter)
+                        node = FileNode(short_name, file, full_name, letter, branch)
                         possible[short_name] = node
 
 starting_points = [] 
@@ -82,8 +84,19 @@ starting_points.append("./data1/")
 starting_points.append("./data2/")
 step1_read_dirs(starting_points)
 
+def step2_find_imports():
+    rffi = ReadFileForImports()
+    for key in possible:
+        node = possible[key]
+        for full_path in node.paths:
+            results = rffi.readFileForImports(full_path)
 
 
-for key in possible:
-    x = possible[key]
-    x.display()
+step2_find_imports()
+
+def show(): 
+    for key in possible:
+        node = possible[key]
+        node.display()
+# show()
+
