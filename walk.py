@@ -5,9 +5,10 @@ from letter import IDService
 class FileNode:
     """ This will hold a file name. It might or might not appear in different _trees_. """
 
-    def __init__(self, full_path, letter, filename):
+    def __init__(self, full_path, short_path, letter, filename):
         self.paths = []
         self.paths.append(full_path)        
+        self.short_path = short_path
         self.letter = letter
         self.filename = filename
 
@@ -17,7 +18,7 @@ class FileNode:
 
     def display(self):
         n = len(self.paths)
-        print("{} {} {}".format(n, self.letter, self.filename))
+        print("{} {} {} {} {} ".format(n, self.letter, self.filename, self.short_path, self.filename))
         for item in self.paths:
             print("\t|{}|".format( item ))
 
@@ -47,9 +48,10 @@ def step1_read_dirs(ary):
                             possible[short_path].addAnotherFullPath(full_path)
                         else:
                             letter = id.label_gen()
-                            fn = FileNode(full_path, letter, filename)
+                            fn = FileNode(full_path, short_path, letter, filename)
                             possible[short_path] = fn
 
 step1_read_dirs(walk_dirs)
 for key in possible:
     possible[key].display()
+    #print( possible[key].letter)
