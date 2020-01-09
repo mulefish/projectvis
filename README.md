@@ -1,6 +1,8 @@
 
 # goal
-Take a react project and create a dataviz of it.
+Take a react project and create a dataviz of it. This will work to show a dataviz of a project OR of different branches of the same project 
+
+
 
 # techstack
 python + html5canvas
