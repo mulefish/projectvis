@@ -7,25 +7,34 @@ class FileNode:
     """ This will hold a file name. It might or might also not appear in different _trees_. """
 
     def __init__(self, short_name, file, full_name, letter, branch):
-        self.paths = []
         self.short_name = short_name
         self.file = file
-        self.letter = letter 
-        #self.paths.append(short_name)        
-        self.paths.append(full_name)   
-        self.branches = []  
-        self.branches.append(branch)  
+        self.letter = letter # The short ID - it will be used in the UI, not this file.
         
-
-
+        self.paths = {}
+        self.paths[branch] = full_name   
+        self.imports = {} 
+        self.imports[branch] = []
+        
     def addNode(self, short_name, full_name, branch):
         #self.paths.append(short_name)
-        self.paths.append(full_name)
-        self.branches.append(branch)
+        self.paths[branch] = full_name
+        self.imports[branch] = []
+
+
+    def addImports(self, full_path, imports):
+        self.imports[full_path] = imports
+
 
     def display(self):
         for full_name in self.paths:
-            print("\tID {}   path {} for {}" .format(self.letter, full_name, self.short_name ))
+            print("{}   {}   {}" .format(self.letter, full_name, self.short_name ))
+            for key in self.imports:
+                # print("\t\t{} :: {}".format(key, self.imports[key]))
+                imported = self.imports[key]
+                for item in imported:
+                    print( "\t\t{} : {}".format(key, item))
+
 
 
 def buildShortName(path, filename, delimiter):
@@ -89,9 +98,11 @@ def step2_find_imports():
     for key in possible:
         node = possible[key]
         for full_path in node.paths:
-            results = rffi.readFileForImports(full_path)
-
-
+            # print("full {} --- {} ".format(full_path, node.paths[full_path] ))
+            path = node.paths[full_path]
+            imports = rffi.readFileForImports(path)
+            node.addImports(full_path, imports)
+        node.display()
 step2_find_imports()
 
 def show(): 
