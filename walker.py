@@ -2,6 +2,7 @@ import os
 import sys
 from letter import IDService
 from find_imports import ReadFileForImports
+import json
 
 """
 1: Create a dataviz of a  well-formed REACT project. 
@@ -114,10 +115,27 @@ def show3_show():
         node = nodes[key]
         node.display()
 
+def step3_emit_as_json():
+    info = {}
+    for key in nodes:
+        node = nodes[key]
+        letter = node.letter
+        ref = node.refs
+
+        info[key] = {}
+        info[key]['letter'] = letter
+        info[key]['ref'] = ref
+
+
+    print( json.dumps(info))
+
+
+
 if __name__ == "__main__":
     starting_points = [] 
     starting_points.append("./data1/")
     starting_points.append("./data2/")
     step1_populate_possible_refs(starting_points)
     step2_read_dirs(starting_points)
-    show3_show()
+    #show3_show()
+    step3_emit_as_json()
