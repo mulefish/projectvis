@@ -4,6 +4,25 @@ from letter import IDService
 from find_imports import ReadFileForImports
 
 possible = {}
+nodes = {} 
+idService = IDService()
+
+class Node:
+    def __init__(self, branch, path_to_file, letter):
+        self.refs = {}
+        self.path_to_file = path_to_file
+        self.letter = letter
+        
+    def addRefsForThisBranch(self, branch, refArray):
+        self.refs[branch] = refArray
+
+    def display(self):
+        print("ID {}     {}".format(self.letter, self.path_to_file))
+        for branch in self.refs:
+            print("\t{}".format(branch ))
+            for ref in self.refs[branch]:
+                print("\t\t{}".format(ref))
+
 
 def clean_the_path(path_to_file):
     # get ./data1/src/components/Profile.js
@@ -33,8 +52,6 @@ def findAbsPath(path_to_file, relative_path):
 
     return absolute
 
-
-
 def step1_populate_possible_refs(dirs):
     # Populate a hash of possible refs. If there is a ref made and 
     # it is not in the 'possible' dict then that is a ref to some 3rd party thing, 
@@ -55,24 +72,34 @@ def step2_read_dirs(dirs):
     for branch in dirs:
         for root, dirs, files in os.walk(branch):
             path = root.split(os.sep)
-            print("...")
+            # print("...")
             for file in files:
                 if file.endswith(".js") or file.endswith(".jsx"):        
                     sep = "/"
                     path_to_file = sep.join(path) 
                     path_to_file += sep + file
-                    # sprint( "{} |{}| {} {}".format(path, path_to_file, file, root))
                     imports = rffi.readFileForImports(path_to_file)
                     cleaned = clean_the_path(path_to_file)
-                    print(">>>{}".format(cleaned))
+                    if cleaned not in nodes:
+                        letter = idService.label_gen()
+                        node = Node(branch, cleaned, letter)
+                        nodes[cleaned] = node
+                    good = []
+                    bad = []
                     for importedRef in imports:
                         path_to_ref = findAbsPath(root, importedRef)
                         ref = path_to_ref.split(os.sep)[-1]
                         if ref in possible:
-                            print("\tYAY.....>{} and {}".format(path_to_ref, ref))
-                        #else:
-                        #    print("\tBOO.....>{} and {}".format(path_to_ref, ref))
-                    
+                            good.append(path_to_ref)
+                        else:
+                            bad.append(path_to_ref)
+                    nodes[cleaned].addRefsForThisBranch(branch, good)                    
+
+
+def show3_show():
+    for key in nodes:
+        node = nodes[key]
+        node.display()
 
 
 if __name__ == "__main__":
@@ -81,3 +108,4 @@ if __name__ == "__main__":
     starting_points.append("./data2/")
     step1_populate_possible_refs(starting_points)
     step2_read_dirs(starting_points)
+    show3_show()
