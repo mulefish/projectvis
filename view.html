@@ -1,0 +1,115 @@
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <style>
+      body {
+  margin: 0;
+}
+
+hr.bar {
+  border: 1px solid #000000;
+}
+
+#background {
+  /* border:1px solid #00ff00; */
+}
+
+#foreground {
+  /* border:2px solid #00f0ff;  */
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.wrapper {
+  position: relative;
+  height:200px;
+}
+
+.wrapper canvas {
+  position: absolute;
+  top: 0;
+  border:2px solid #00f0ff;
+  left: 0;
+}
+      </style>
+  </head>
+  <body>
+
+
+
+<div id="viewport">
+ </div>
+ <hr class='bar' />
+hello world
+<script>
+  let bg;
+let fg;
+let mouseDown = false;
+
+function onMouseDown(e) {
+    mouseDown = true;
+    e.stopPropagation();
+}
+
+function onMouseUp(e) {
+    mouseDown = false;
+    e.stopPropagation();
+}
+
+function onMouseMove(e) {
+    e.stopPropagation();
+    if (!mouseDown) return;
+    const cursor = {
+        x: e.offsetX || e.originalEvent.layerX,
+        y: e.offsetY || e.originalEvent.layerY
+    };
+
+    console.log(cursor.x, cursor.y);
+}
+
+
+function makeDisplay() {
+    const dimensions = {
+        width: window.innerWidth + 'px',
+        height: window.innerHeight * 0.61 + '500px'
+    };
+    const inlineStyle = `style="width: ${dimensions.width}; height: ${dimensions.height};"`
+    const ui = `<div className='wrapper' ${inlineStyle}>
+        <canvas id='background' width='${dimensions.width}' height='${dimensions.height}' ${inlineStyle}></canvas>
+        <canvas id='foreground' width='${dimensions.width}' height='${dimensions.height}' ${inlineStyle}></canvas>
+      </div>`
+    document.getElementById("viewport").innerHTML = ui
+
+    const c = document.getElementById("background");
+    bg = c.getContext("2d");
+    bg.font = "12px Arial";
+
+
+    bg.beginPath();
+    bg.arc(95, 50, 40, 0, 2 * Math.PI);
+    bg.stroke();
+
+    const c2 = document.getElementById("foreground")
+
+    //add events
+    c2.addEventListener("mousedown", onMouseDown, false);
+    c2.addEventListener("mouseup", onMouseUp, false);
+    c2.addEventListener("mousemove", onMouseMove, false);
+
+    fg = c2.getContext("2d");
+
+    fg.beginPath();
+    fg.arc(195, 44, 10, 0, 2 * Math.PI);
+    fg.stroke();
+
+}
+makeDisplay()
+</script>
+
+
+</body>
+</html>
+
