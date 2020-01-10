@@ -14,7 +14,12 @@ class Node:
         self.letter = letter
         
     def addRefsForThisBranch(self, branch, refArray):
-        self.refs[branch] = refArray
+        ary = [] 
+        b = branch.replace("./", "")
+        for ref in refArray:
+            x = ref.replace(b, "")
+            ary.append(x)
+        self.refs[branch] = ary
 
     def display(self):
         print("ID {}    {}".format(self.letter, self.path_to_file))
@@ -22,9 +27,10 @@ class Node:
             for ref in self.refs[branch]:
                 print("\t\t{}".format(ref))
 
-def clean_the_path(path_to_file):
+def clean_the_path(path_to_file, branch):
     # get ./data1/src/components/Profile.js
     # return data1/src/components/Profile
+    path_to_file = path_to_file.replace(branch, "")
     path_to_file = path_to_file.replace(".jsx", "")
     path_to_file = path_to_file.replace(".js", "")
     path_to_file = path_to_file.replace("./", "")
@@ -58,7 +64,7 @@ def step1_populate_possible_refs(dirs):
         for root, dirs, files in os.walk(branch):
             for file in files:
                 if file.endswith(".js") or file.endswith(".jsx"):   
-                    file = clean_the_path(file)     
+                    file = clean_the_path(file, branch)     
                     
                     if file in possible:
                         possible[file] += 1
@@ -77,7 +83,7 @@ def step2_read_dirs(dirs):
                     path_to_file = sep.join(path) 
                     path_to_file += sep + file
                     imports = rffi.readFileForImports(path_to_file)
-                    cleaned = clean_the_path(path_to_file)
+                    cleaned = clean_the_path(path_to_file, branch)
                     if cleaned not in nodes:
                         letter = idService.label_gen()
                         node = Node(branch, cleaned, letter)
