@@ -17,12 +17,10 @@ class Node:
         self.refs[branch] = refArray
 
     def display(self):
-        print("ID {}     {}".format(self.letter, self.path_to_file))
+        print("ID {}    {}".format(self.letter, self.path_to_file))
         for branch in self.refs:
-            print("\t{}".format(branch ))
             for ref in self.refs[branch]:
                 print("\t\t{}".format(ref))
-
 
 def clean_the_path(path_to_file):
     # get ./data1/src/components/Profile.js
@@ -95,12 +93,10 @@ def step2_read_dirs(dirs):
                             bad.append(path_to_ref)
                     nodes[cleaned].addRefsForThisBranch(branch, good)                    
 
-
 def show3_show():
     for key in nodes:
         node = nodes[key]
         node.display()
-
 
 if __name__ == "__main__":
     starting_points = [] 
