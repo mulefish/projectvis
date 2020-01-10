@@ -3,6 +3,15 @@ import sys
 from letter import IDService
 from find_imports import ReadFileForImports
 
+"""
+1: Create a dataviz of a  well-formed REACT project. 
+2: Nodes will be files inside the project. Each node will import zero or more other nodes from
+inside this project. This will ignore imports from  outside of the project. These imported refs will be 
+the edges. 
+3: This will also be able to import 2 different versions. I am thinking branch1 vs. branch2 of a project. 
+"""
+
+
 possible = {}
 nodes = {} 
 idService = IDService()
