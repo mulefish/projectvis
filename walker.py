@@ -115,7 +115,7 @@ def show3_show():
         node = nodes[key]
         node.display()
 
-def step3_emit_as_json():
+def step3_emit_to_file_as_json():
     info = {}
     for key in nodes:
         node = nodes[key]
@@ -126,9 +126,12 @@ def step3_emit_as_json():
         info[key]['letter'] = letter
         info[key]['ref'] = ref
 
+    file='data.js' 
+    with open(file, 'w') as filetowrite:
+        filetowrite.write(json.dumps(info))
 
-    print( json.dumps(info))
-
+    print( "const data = {}".format(json.dumps(info)))
+    print("\n*** Wrote to {} ***\n".format(file))
 
 
 if __name__ == "__main__":
@@ -138,4 +141,4 @@ if __name__ == "__main__":
     step1_populate_possible_refs(starting_points)
     step2_read_dirs(starting_points)
     #show3_show()
-    step3_emit_as_json()
+    step3_emit_to_file_as_json()

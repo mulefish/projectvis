@@ -2,7 +2,13 @@
 # goal
 Take a react project and create a dataviz of it. This will work to show a dataviz of a project OR of different branches of the same project 
 
+# lifecycle
+1: python walker.py -> data.js
+2: data.js -> view.html
 
+# where is the data?
+This project has two dummy projects ( data1 and data2 ) and near the end of the walker.py file those are pointed to. 
+walker.py will walk through those and create a data-graph of edges and nodes and emit a ball of json ( data.js). view.html will read that and display it. For a server I use [python3 -m http.server] but any server would work. 
 
 # techstack
 python + html5canvas
