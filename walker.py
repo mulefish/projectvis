@@ -31,10 +31,11 @@ class Node:
         self.refs[branch] = ary
 
     def display(self):
-        print("ID {}    {}".format(self.letter, self.path_to_file))
+        print("NODE {}    {}".format(self.letter, self.path_to_file))
         for branch in self.refs:
             for ref in self.refs[branch]:
-                print("\t\t{}".format(ref))
+                letter = nodes[ref].letter
+                print("{}\t\t{}".format(letter, ref))
 
 def clean_the_path(path_to_file, branch):
     # get ./data1/src/components/Profile.js
