@@ -1,4 +1,4 @@
-from walk import *
+from walker import *
 from letter import IDService
 
 def findImportPath_noChange():
@@ -47,27 +47,30 @@ def findImportPath_up1dir_withLeadingDot():
         print("FAIL actual |{}| for findImportPath_up1dir_withLeadingDot".format(actual))
 
 def clean_the_path_doSomething():
+    branch = "data1/"
     given = "./data1/src/components/Profile.js"
-    expected = "data1/src/components/Profile"
-    actual = clean_the_path(given)
+    expected = "src/components/Profile"
+    actual = clean_the_path(given, branch)
     if actual == expected:
         print("PASS actual |{}| for clean_the_path_test".format(actual))
     else:
         print("FAIL actual |{}| for clean_the_path_test".format(actual))
 
 def clean_the_path_doNothing():
-    given = "data1/src/components/Profile"
-    expected = "data1/src/components/Profile"
-    actual = clean_the_path(given)
+    branch = "data1/"
+    given = "src/components/Profile"
+    expected = "src/components/Profile"
+    actual = clean_the_path(given, branch)
     if actual == expected:
         print("PASS actual |{}| for clean_the_path_doNothing".format(actual))
     else:
         print("FAIL actual |{}| for clean_the_path_doNothing".format(actual))
 
 def clean_the_path_of_jsx_extension():
-    given = "data1/src/components/Profile.jsx"
-    expected = "data1/src/components/Profile"
-    actual = clean_the_path(given)
+    branch = "data1/"
+    given = "src/components/Profile.jsx"
+    expected = "src/components/Profile"
+    actual = clean_the_path(given, branch)
     if actual == expected:
         print("PASS actual |{}| for clean_the_path_of_jsx_extension".format(actual))
     else:

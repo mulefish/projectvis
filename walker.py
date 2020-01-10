@@ -18,10 +18,11 @@ nodes = {}
 idService = IDService()
 
 class Node:
-    def __init__(self, branch, path_to_file, letter):
+    def __init__(self, branch, path_to_file, letter, depth):
         self.refs = {}
         self.path_to_file = path_to_file
         self.letter = letter
+        self.depth = depth # a/b/c/something.js = 3 but a/b/c/d/e/f/something-else.js = 6  
         
     def addRefsForThisBranch(self, branch, refArray):
         ary = [] 
@@ -32,7 +33,7 @@ class Node:
         self.refs[branch] = ary
 
     def display(self):
-        print("NODE {}    {}".format(self.letter, self.path_to_file))
+        print("{}  DEPTH={} FILE={} ".format(self.letter, self.depth,self.path_to_file ))
         for branch in self.refs:
             for ref in self.refs[branch]:
                 letter = nodes[ref].letter
@@ -97,7 +98,7 @@ def step2_read_dirs(dirs):
                     cleaned = clean_the_path(path_to_file, branch)
                     if cleaned not in nodes:
                         letter = idService.label_gen()
-                        node = Node(branch, cleaned, letter)
+                        node = Node(branch, cleaned, letter, len(path))
                         nodes[cleaned] = node
                     good = []
                     bad = []
@@ -121,16 +122,17 @@ def step3_emit_to_file_as_json():
         node = nodes[key]
         letter = node.letter
         ref = node.refs
+        depth = node.depth
 
         info[key] = {}
         info[key]['letter'] = letter
         info[key]['ref'] = ref
-
+        info[key]['depth'] = depth
     file='data.js' 
     with open(file, 'w') as filetowrite:
-        filetowrite.write(json.dumps(info))
+        filetowrite.write("const data = {}".format(json.dumps(info)))
 
-    print( "const data = {}".format(json.dumps(info)))
+    print( json.dumps(info))
     print("\n*** Wrote to {} ***\n".format(file))
 
 
@@ -140,5 +142,5 @@ if __name__ == "__main__":
     starting_points.append("./data2/")
     step1_populate_possible_refs(starting_points)
     step2_read_dirs(starting_points)
-    #show3_show()
+    # show3_show()
     step3_emit_to_file_as_json()
