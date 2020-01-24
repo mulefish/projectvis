@@ -1,121 +1,79 @@
 from walker import *
 from letter import IDService
+import unittest
+from walker import *
 
-def findImportPath_noChange():
-    path_to_file = "a/b/c/d"
-    relative_path_of_the_import = "/kittycat/something"
-    expected = "a/b/c/d/kittycat/something"
-    actual = findAbsPath(path_to_file, relative_path_of_the_import)
+class TDD(unittest.TestCase):
 
-    if actual == expected:
-        print("PASS actual |{}| for findImportPath_noChange".format(actual))
-    else:
-        print("FAIL actual |{}| for findImportPath_noChange".format(actual))
+    @classmethod
+    def setUpClass(self):
+        self.readProject = ReadProject()
 
-def findImportPath_up2dirs():
-    path_to_file = "a/b/c/d"
-    relative_path_of_the_import = "../../something"
-    expected = "a/b/something"
-    actual = findAbsPath(path_to_file, relative_path_of_the_import)
+    def test_clean_the_path(self):
+        given = "./data1/src/components/Profile.js"
+        expected = "src/components/Profile"
+        branch = "data1"
+        actual = self.readProject.clean_the_path(given, branch) 
+        self.assertEqual(actual, expected)
 
-    if actual == expected:
-        print("PASS actual |{}| for findImportPath_up2dirs".format(actual))
-    else:
-        print("FAIL actual |{}| for findImportPath_up2dirs".format(actual))
+    def test_fictional_and_actual_merge(self):
 
-def findImportPath_up1dir():
-    path_to_file = "a/b/c/d"
-    relative_path_of_the_import = "../kittycat/finch/something"
-    expected = "a/b/c/kittycat/finch/something"
-    actual = findAbsPath(path_to_file, relative_path_of_the_import)
+        """Given 2 nearly identical branches for a project, 
+        suppose they both contain a "/foo/bar/baz/somefile.js" - this will be the 'fictional' file
+        In reality, these two files will be at something like: 
+        /Users/kermitt/playground/projectvis/data1/src/foo/bar/baz/somefile.js 
+        and 
+        /Users/kermitt/playground/projectvis/data2/src/foo/bar/baz/somefile.js
+        I will consider these latter two to be the 'actual' 
+        """ 
+    
+        starting_points = [] 
+        starting_points.append("data1")
+        starting_points.append("data2")
+        self.readProject.step1_populate_possible_refs(starting_points)
 
-    if actual == expected:
-        print("PASS actual |{}| for findImportPath_up1dir".format(actual))
-    else:
-        print("FAIL actual |{}| for findImportPath_up1dir".format(actual))
+        # Most of the possible will be seen twice - In the dummy data only FINDME ought to be 1 
+        actual1 = 0
+        # print("...! ")
+        for key in self.readProject.possible:
+            val = self.readProject.possible[key]
+       
+        actual1 = self.readProject.possible["src/components/Article/FINDME"]
+        actual2 = self.readProject.possible["src/components/ListErrors"]
+        actual3 = self.readProject.possible["src/components/Article/CommentContainer"]
+        expected1 = 1
+        expected2 = 2
+        expected3 = 2
 
+        isOk = actual1 == expected1 and  actual2 == expected2 and  actual3 == expected3
+        
+        self.assertTrue(isOk)
 
-def findImportPath_up1dir_withLeadingDot():
-    path_to_file = "a/b/c/d"
-    relative_path_of_the_import = "./../kittycat/finch/something"
-    expected = "a/b/c/kittycat/finch/something"
-    actual = findAbsPath(path_to_file, relative_path_of_the_import)
+       
 
-    if actual == expected:
-        print("PASS actual |{}| for findImportPath_up1dir_withLeadingDot".format(actual))
-    else:
-        print("FAIL actual |{}| for findImportPath_up1dir_withLeadingDot".format(actual))
+    def test_letter(self):
 
-def clean_the_path_doSomething():
-    branch = "data1/"
-    given = "./data1/src/components/Profile.js"
-    expected = "src/components/Profile"
-    actual = clean_the_path(given, branch)
-    if actual == expected:
-        print("PASS actual |{}| for clean_the_path_test".format(actual))
-    else:
-        print("FAIL actual |{}| for clean_the_path_test".format(actual))
+        """Letters > Numbers ( as far as IDs go ) """
 
-def clean_the_path_doNothing():
-    branch = "data1/"
-    given = "src/components/Profile"
-    expected = "src/components/Profile"
-    actual = clean_the_path(given, branch)
-    if actual == expected:
-        print("PASS actual |{}| for clean_the_path_doNothing".format(actual))
-    else:
-        print("FAIL actual |{}| for clean_the_path_doNothing".format(actual))
+        id = IDService()
+        letter1 = id.label_gen()
+        letter2 = id.label_gen()
+        letter3 = id.label_gen()
+        expected = "a b c"
+        actual = "{} {} {}".format(letter1, letter2, letter3)
+        self.assertEqual(actual, expected)
 
-def clean_the_path_of_jsx_extension():
-    branch = "data1/"
-    given = "src/components/Profile.jsx"
-    expected = "src/components/Profile"
-    actual = clean_the_path(given, branch)
-    if actual == expected:
-        print("PASS actual |{}| for clean_the_path_of_jsx_extension".format(actual))
-    else:
-        print("FAIL actual |{}| for clean_the_path_of_jsx_extension".format(actual))
+    # def test_isupper(self):
+    #     self.assertTrue('FOO'.isupper())
+    #     self.assertFalse('Foo'.isupper())
 
-def letter_test():
-    id = IDService()
-    letter1 = id.label_gen()
-    letter2 = id.label_gen()
-    letter3 = id.label_gen()
-    expected = "a b c"
-    actual = "{} {} {}".format(letter1, letter2, letter3)
-    if actual == expected:
-        print("PASS actual |{}| for letter_test".format(actual))
-    else:
-        print("FAIL actual |{}| for letter_test".format(actual))
+    # def test_split(self):
+    #     s = 'hello world'
+    #     self.assertEqual(s.split(), ['hello', 'world'])
+    #     # check that s.split fails when the separator is not a string
+    #     with self.assertRaises(TypeError):
+    #         s.split(2)
 
-def find_imported_ref_and_discard_the_path_test1():
-    given = "a/b/c/d/something"
-    expected = "something"
-    actual = given.split(os.sep)[-1]
-    if actual == expected:
-        print("PASS actual |{}| for find_imported_ref_and_discard_the_path_test1".format(actual))
-    else:
-        print("FAIL actual |{}| for find_imported_ref_and_discard_the_path_test1".format(actual))
+if __name__ == '__main__':
+    unittest.main()
 
-def find_imported_ref_and_discard_the_path_test2():
-    given = "something"
-    expected = "something"
-    actual = given.split(os.sep)[-1]
-    if actual == expected:
-        print("PASS actual |{}| for find_imported_ref_and_discard_the_path_test2".format(actual))
-    else:
-        print("FAIL actual |{}| for find_imported_ref_and_discard_the_path_test2".format(actual))
-
-
-print("****")
-findImportPath_noChange()
-findImportPath_up2dirs()
-findImportPath_up1dir()
-findImportPath_up1dir_withLeadingDot()
-clean_the_path_doSomething()
-clean_the_path_doNothing()
-clean_the_path_of_jsx_extension()
-letter_test()
-find_imported_ref_and_discard_the_path_test1()
-find_imported_ref_and_discard_the_path_test2()
-print("****")
