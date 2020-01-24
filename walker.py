@@ -132,7 +132,9 @@ def step3_emit_to_file_as_json():
     with open(file, 'w') as filetowrite:
         filetowrite.write("const data = {}".format(json.dumps(info)))
 
-    print( json.dumps(info))
+    # print( json.dumps(info))
+    for x in info:
+        print(x)
     print("\n*** Wrote to {} ***\n".format(file))
 
 
