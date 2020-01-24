@@ -25,13 +25,9 @@ class ReadFileForImports:
 
 if __name__ == "__main__":
     """Self test"""
-    p = "data1/react-redux-realworld-example-app-master/src/components/ListPagination.js"
+    # p = "data1/react-redux-realworld-example-app-master/src/components/ListPagination.js"
+    p = "./data1/src/components/App.js"
     rffi = ReadFileForImports()
     results = rffi.readFileForImports(p)
     actual = json.dumps(results)
-    expected = json.dumps(["react","../agent","react-redux","../constants/actionTypes"])
-    
-    if expected == actual:
-        print("PASS find_imports.py")
-    else:
-        print("FAIL find_imports.py")
+    print( actual )    

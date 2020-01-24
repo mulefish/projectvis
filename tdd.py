@@ -1,13 +1,25 @@
-from walker import *
 from letter import IDService
 import unittest
 from walker import *
+from find_imports import *
 
 class TDD(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
         self.readProject = ReadProject()
+        self.readFileForImported = ReadFileForImports()
+
+    def test_read_imports_from_React_file(self):
+
+        p = "./data1/src/components/App.js"
+        results = self.readFileForImported.readFileForImports(p)
+
+        # TODO : Finish writting this 
+        print( results )
+        self.assertEqual(True, False)
+
+
 
     def test_clean_the_path(self):
         given = "./data1/src/components/Profile.js"
@@ -34,7 +46,6 @@ class TDD(unittest.TestCase):
 
         # Most of the possible will be seen twice - In the dummy data only FINDME ought to be 1 
         actual1 = 0
-        # print("...! ")
         for key in self.readProject.possible:
             val = self.readProject.possible[key]
        

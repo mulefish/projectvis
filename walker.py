@@ -50,7 +50,7 @@ if __name__ == "__main__":
     readProject = ReadProject()
     readProject.step1_populate_possible_refs(starting_points)
 
-    # for key in readProject.possible:
-    #     value = readProject.possible[key]
-    #     print( "{}   {} ".format(value, key ))
+    for key in readProject.possible:
+        value = readProject.possible[key]
+        print( "{}   {} ".format(value, key ))
         
