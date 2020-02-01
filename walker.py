@@ -12,6 +12,7 @@ SEP = os.sep
 class ReadProject:
 
     def __init__(self):
+        self.startingDir = "src"
         self.possible = {}
 
     def clean_the_path(self, path_to_file, branch):
@@ -52,5 +53,5 @@ if __name__ == "__main__":
 
     for key in readProject.possible:
         value = readProject.possible[key]
-        print( "{}   {} ".format(value, key ))
+        print( "SELF-TEST: {}   {} ".format(value, key ))
         
