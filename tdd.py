@@ -1,34 +1,38 @@
 from letter import IDService
-# import unittest
-from walker import *
-from find_imports import *
+from walker import ReadProject
+from find_imports import ReadFileForImports
 from caller import Caller
 
 judge = Caller()         
 readProject = ReadProject()
 readFileForImported = ReadFileForImports()
 
-def test_path_manipulation():
+def test_idea_manipulation():
     a = ['a', 'b', 'c', 'd', 'e', 'f']
     actual = a[:-1]
     expected = ['a', 'b', 'c', 'd', 'e']
     judge.verdict(expected, actual)
 
-def test_read_imports_from_React_file():
+def test_read_imports_from_React_file_figureOutPath():
     f = "./data1/src/components/App.js"
     startingDir = "src"
     actual = readFileForImported.readFileForReactImports(f, startingDir)
-    expected = ['../components/Home', '../components/Login', '../components/Profile', '../components/ProfileFavorites', '../components/Register', '../components/something/FINDME', '../store', 'react-router-redux']
+    expected = ['src/components/Home','src/components/Login','src/components/Profile','src/components/ProfileFavorites','src/components/Register','src/components/something/FINDME','src/store','src/react-router-redux']
+    # for x in actual: 
+    #     print( x )
     judge.verdict(expected, actual)
 
-def test_clean_the_path():
+def test_readProject_clean_the_path():
     given = "./data1/src/components/Profile.js"
     expected = "src/components/Profile"
     branch = "data1"
     actual = readProject.clean_the_path(given, branch) 
     judge.verdict(actual, expected)
 
-def test_fictional_and_actual_merge():
+
+
+
+def test_readProject_fictional_and_actual_merge():
 
     """Given 2 nearly identical branches for a project, 
     suppose they both contain a "/foo/bar/baz/somefile.js" - this will be the 'fictional' file
@@ -55,14 +59,11 @@ def test_fictional_and_actual_merge():
     expected1 = 1
     expected2 = 2
     expected3 = 2
-
     isOk = actual1 == expected1 and  actual2 == expected2 and  actual3 == expected3
-
     judge.verdict( True, isOk)
 
 
-
-def test_letter():
+def test_letter_IDService():
 
     """Letters > Numbers ( as far as IDs go ) """
 
@@ -75,16 +76,15 @@ def test_letter():
     judge.verdict(actual, expected)
 
 
-
 if __name__ == '__main__':
-    test_path_manipulation()
-    test_read_imports_from_React_file()
-    test_clean_the_path()
-    test_fictional_and_actual_merge()
-    test_letter()
 
+    test_idea_manipulation()
+    test_readProject_clean_the_path()
+    test_readProject_fictional_and_actual_merge()
+    test_letter_IDService()
+    test_read_imports_from_React_file_figureOutPath()
 
-
+    
 
 
 # class TDD(unittest.TestCase):

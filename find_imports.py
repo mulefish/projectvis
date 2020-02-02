@@ -8,35 +8,47 @@ class ReadFileForImports:
         return False
 
     def readFileForReactImports(self, path, startingDir):
-        # "data1/src/dir/file.js" ought to be "dir/file.js"
-        tmp = path.split(startingDir)[1] 
-        pieces = tmp.split(os.sep)
+        # "data1/src/dir/file.js" ought to be "dir/"
+        tmp = path.split(startingDir)[1] # toss the 'data1' 
+        pieces = tmp.split(os.sep) # split into list
+        pieces = pieces[:-1] # toss the 'file.js
+
         results = []
         with open(path) as fp:
             line = fp.readline()
             while line:
                 if "import" in line and "from" in line:
-                    result = line.strip()
+                    step1 = line.strip()
                     # import { SET_PAGE } from '../constants/actionTypes';
-                    result = result.split("from")[1]
-                
+                    step1 = step1.split("from")[1]
                     # '../constants/actionTypes';
-                    result = result.replace(";","")
-                    result = result.replace("'","")
-                    result = result.strip()
+                    step1 = step1.replace(";","")
+                    step1 = step1.replace("'","")
+                    step1 = step1.strip()
                     
                     # ../constants/actionTypes
+                    ary = step1.split(os.sep)
+                    goUp = 0 
+                    ary2 = [] 
+                    for item in ary:
+                        if item == "..":
+                            # skip this!
+                            goUp -= 1
+                        else:
+                            # rebuild this array 
+                            ary2.append(item)
+
+                    step1 = os.sep.join(ary2)
+                    pathToHere = pieces[:-1]
+                    step2 = os.sep
+                    step2 = step2.join(pathToHere)
+
+                    result = startingDir + step2 + os.sep + step1
+
                     results.append(result)
 
                 line = fp.readline()
 
-        for r in results:
-            ary = r.split(os.sep)
-            # p rint(r)  
-            # p rint(tmp)
-            # p rint(pieces)
-            # p rint(ary)
-            # p rint('-')  
         return results
 
 if __name__ == "__main__":

@@ -14,6 +14,8 @@ def blue( x):
 
 
 class Caller:
+    def out(self, msg):
+        print( msg )
     def emit(self, msg):
         file = inspect.stack()[1][1]
         line = inspect.stack()[1][2]
@@ -38,4 +40,14 @@ class Caller:
             print("{} | {} | {}".format(green("PASS"), line, func )  )
         else:
             print("{} | {} | {}".format(red("FAIL"), line, func )  )
+
+    def verdict2(self, expected, actual, msg):
+        file = inspect.stack()[1][1]
+        line = inspect.stack()[1][2]
+        func = inspect.stack()[1][3]
+
+        if expected == actual:
+            print("{} | {} | {} | {}".format(green("PASS"), line, msg, func )  )
+        else:
+            print("{} | {} | {} | {}".format(red("FAIL"), line, msg, func )  )
 
