@@ -1,79 +1,87 @@
-from walker import *
 from letter import IDService
-import unittest
-from walker import *
+from walker import ReadProject
+from find_imports import ReadFileForImports
+from caller import Caller
 
-class TDD(unittest.TestCase):
+judge = Caller()         
+readProject = ReadProject()
+readFileForImported = ReadFileForImports()
 
-    @classmethod
-    def setUpClass(self):
-        self.readProject = ReadProject()
+def test_idea_manipulation():
+    a = ['a', 'b', 'c', 'd', 'e', 'f']
+    actual = a[:-1]
+    expected = ['a', 'b', 'c', 'd', 'e']
+    judge.verdict(expected, actual)
 
-    def test_clean_the_path(self):
-        given = "./data1/src/components/Profile.js"
-        expected = "src/components/Profile"
-        branch = "data1"
-        actual = self.readProject.clean_the_path(given, branch) 
-        self.assertEqual(actual, expected)
+def test_read_imports_from_React_file_figureOutPath():
+    f = "./data1/src/components/App.js"
+    startingDir = "src"
+    actual = readFileForImported.readFileForReactImports(f, startingDir)
+    expected = ['src/components/Home','src/components/Login','src/components/Profile','src/components/ProfileFavorites','src/components/Register','src/components/something/FINDME','src/store','src/react-router-redux']
+    # for x in actual: 
+    #     print( x )
+    judge.verdict(expected, actual)
 
-    def test_fictional_and_actual_merge(self):
+def test_readProject_clean_the_path():
+    given = "./data1/src/components/Profile.js"
+    expected = "src/components/Profile"
+    branch = "data1"
+    # actual = readProject.clean_the_path(given, branch) 
+    actual = readProject.clean_the_path(given, "src") 
+    print( "actual is!\n {}".format(actual ))
+    judge.verdict(actual, expected)
 
-        """Given 2 nearly identical branches for a project, 
-        suppose they both contain a "/foo/bar/baz/somefile.js" - this will be the 'fictional' file
-        In reality, these two files will be at something like: 
-        /Users/kermitt/playground/projectvis/data1/src/foo/bar/baz/somefile.js 
-        and 
-        /Users/kermitt/playground/projectvis/data2/src/foo/bar/baz/somefile.js
-        I will consider these latter two to be the 'actual' 
-        """ 
-    
-        starting_points = [] 
-        starting_points.append("data1")
-        starting_points.append("data2")
-        self.readProject.step1_populate_possible_refs(starting_points)
 
-        # Most of the possible will be seen twice - In the dummy data only FINDME ought to be 1 
-        actual1 = 0
-        # print("...! ")
-        for key in self.readProject.possible:
-            val = self.readProject.possible[key]
-       
-        actual1 = self.readProject.possible["src/components/Article/FINDME"]
-        actual2 = self.readProject.possible["src/components/ListErrors"]
-        actual3 = self.readProject.possible["src/components/Article/CommentContainer"]
-        expected1 = 1
-        expected2 = 2
-        expected3 = 2
 
-        isOk = actual1 == expected1 and  actual2 == expected2 and  actual3 == expected3
-        
-        self.assertTrue(isOk)
 
-       
+def test_readProject_fictional_and_actual_merge():
 
-    def test_letter(self):
+    """Given 2 nearly identical branches for a project, 
+    suppose they both contain a "/foo/bar/baz/somefile.js" - this will be the 'fictional' file
+    In reality, these two files will be at something like: 
+    /Users/kermitt/playground/projectvis/data1/src/foo/bar/baz/somefile.js 
+    and 
+    /Users/kermitt/playground/projectvis/data2/src/foo/bar/baz/somefile.js
+    I will consider these latter two to be the 'actual' 
+    """ 
 
-        """Letters > Numbers ( as far as IDs go ) """
+    starting_points = [] 
+    starting_points.append("data1")
+    starting_points.append("data2")
+    readProject.step1_populate_possible_refs(starting_points)
 
-        id = IDService()
-        letter1 = id.label_gen()
-        letter2 = id.label_gen()
-        letter3 = id.label_gen()
-        expected = "a b c"
-        actual = "{} {} {}".format(letter1, letter2, letter3)
-        self.assertEqual(actual, expected)
+    # Most of the possible will be seen twice - In the dummy data only FINDME ought to be 1 
+    actual1 = 0
+    for key in readProject.possible:
+        val = readProject.possible[key]
 
-    # def test_isupper(self):
-    #     self.assertTrue('FOO'.isupper())
-    #     self.assertFalse('Foo'.isupper())
+    actual1 = readProject.possible["src/components/Article/FINDME"]
+    actual2 = readProject.possible["src/components/ListErrors"]
+    actual3 = readProject.possible["src/components/Article/CommentContainer"]
+    expected1 = 1
+    expected2 = 2
+    expected3 = 2
+    isOk = actual1 == expected1 and  actual2 == expected2 and  actual3 == expected3
+    judge.verdict( True, isOk)
 
-    # def test_split(self):
-    #     s = 'hello world'
-    #     self.assertEqual(s.split(), ['hello', 'world'])
-    #     # check that s.split fails when the separator is not a string
-    #     with self.assertRaises(TypeError):
-    #         s.split(2)
+
+def test_letter_IDService():
+
+    """Letters > Numbers ( as far as IDs go ) """
+
+    id = IDService()
+    letter1 = id.label_gen()
+    letter2 = id.label_gen()
+    letter3 = id.label_gen()
+    expected = "a b c" 
+    actual = "{} {} {}".format(letter1, letter2, letter3)
+    judge.verdict(actual, expected)
+
 
 if __name__ == '__main__':
-    unittest.main()
 
+    test_idea_manipulation()
+#    test_readProject_clean_the_path()
+#    test_readProject_fictional_and_actual_merge()
+    test_letter_IDService()
+    test_read_imports_from_React_file_figureOutPath()
