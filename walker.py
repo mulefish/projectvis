@@ -1,70 +1,72 @@
-
-
-
-
-
 import os
-import sys
-from letter import IDService
-from find_imports import ReadFileForImports
-import json
-import os.path
 
 
-idService = IDService()
-SEP = os.sep 
-readFileForImported = ReadFileForImports()
+def getImports(path, startingDir):
+    # "data1/src/dir/file.js" ought to be "dir/"
+    tmp = path.split(startingDir)[1] # toss the 'data1' 
+    pieces = tmp.split(os.sep) # split into list
+    pieces = pieces[:-1] # toss the 'file.js
 
-class ReadProject:
+    results = []
+    with open(path) as fp:
+        line = fp.readline()
+        while line:
+            if "import" in line and "from" in line:
+                step1 = line.strip()
+                # import { SET_PAGE } from '../constants/actionTypes';
+                step1 = step1.split("from")[1]
+                # '../constants/actionTypes';
+                step1 = step1.replace("..","")
+                step1 = step1.replace(";","")
+                step1 = step1.replace("'","")
+                #step1 = step1.replace(".\/", "!!")
+                # step1 = step1.replace(".\\", "")
+                # step1 = step1.replace("/", "")
+                # step1 = step1.replace(".", "")
 
-    def __init__(self):
-        self.startingDir = "src"
-        self.possible = {}
+                step1 = step1.strip()
+                #step1 = step1.replace("/", os.sep)
+                # ../constants/actionTypes
+                ary = step1.split(os.sep)
+                goUp = 0 
+                ary2 = [] 
+                for item in ary:
+                    if item == "..":
+                        # skip this!
+                        goUp -= 1
+                    else:
+                        # rebuild this array 
+                        ary2.append(item)
 
-    def clean_the_path(self, path_to_file, startingDir):
-
-        #print("ONE {}".format( path_to_file ))
-
-        path_to_file = os.path.splitext(path_to_file)[0]
-        #print("TWO {}".format( path_to_file ))
-        path_to_file = path_to_file.split(startingDir + os.sep)[1]
-        #print("THREE {}".format( path_to_file ))
-        # print()
-        return path_to_file
-    # def clean_the_path(self, path_to_file, branch):
-    #     path_to_file = os.path.splitext(path_to_file)[0]
-    #     path_to_file = path_to_file.split(branch + os.sep)[1]
-    #     return path_to_file
-    def step1_populate_possible_refs(self, dirs):
-        # Populate a hash of possible refs. If there is a ref made and 
-        # it is not in the 'possible' dict then that is a ref to some 3rd party thing, 
-        # such as 'react' or 'font-awesome' or something
-        for branch in dirs:
-            for root, dirs, files in os.walk(branch):
-                for file in files:
-
-                    absFile = "{}{}{}".format(root, SEP, file)
-                    if absFile.endswith(".js") or absFile.endswith(".jsx"):   
-                        absFile = self.clean_the_path(absFile, branch)     
-                        if absFile in self.possible:
-                            self.possible[absFile] += 1
-                        else:
-                            self.possible[absFile] = 1
-
-
-if __name__ == "__main__":
-    starting_points = [] 
-    starting_points.append("data1")
-    starting_points.append("data2")
-    readProject = ReadProject()
-    readProject.step1_populate_possible_refs(starting_points)
-
-    for key in readProject.possible:
-        count = readProject.possible[key]
-        print( "SELF-TEST: {}   |{}| ".format(count, key ))
+                step1 = os.sep.join(ary2)
+                pathToHere = pieces[:-1]
+                step2 = os.sep
+                step2 = step2.join(pathToHere)
+                #result = startingDir + step2 + os.sep + step1
+                result = step2 + os.sep + step1
+                results.append(result)
+            line = fp.readline()
+    return results
 
 
-        #startingDir = "src"
-        #actual = readFileForImported.readFileForReactImports(f, startingDir)
 
-        
+
+
+beginingPath = "./data1/src/"
+for dirpath, dirs, files in os.walk(beginingPath):	
+    for filename in files:
+
+        if filename.endswith(".js") or filename.endswith(".jsx") or filename.endswith(".py"):
+            fname = os.path.join(dirpath,filename)
+            cleanFname = fname.replace(beginingPath, "")
+            cleanFname = cleanFname.replace(".js", "")
+            cleanFname = cleanFname.replace(".jxs", "")
+            cleanFname = cleanFname.replace(".py", "")
+
+            imports = getImports(fname, beginingPath)
+            if len(imports) > 0:
+                print("\t................\n{} ".format(cleanFname))
+                for item in imports:
+                    print(item)
+
+
